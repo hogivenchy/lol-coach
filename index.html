@@ -277,9 +277,35 @@ function buildText(m,me,snaps,evs,items,mt,et,dur,cs,cpm,kda,dpm){
   L.push('');L.push('--- 상대팀 ---');
   et.forEach(p=>L.push(`${p.championName} (${p.individualPosition}): ${p.kills}/${p.deaths}/${p.assists} CS${p.totalMinionsKilled+p.neutralMinionsKilled}`));
   L.push('');L.push('---');
-  L.push('위 데이터를 바탕으로 프로 코치 관점에서 이번 게임을 분석해줘.');
-  L.push('잘한 점, 고쳐야 할 점, 다음 게임에서 집중할 것 순서로 피드백해줘.');
-  L.push('타임라인의 CS/골드 흐름과 이벤트 패턴을 중심으로 구체적으로 분석해줘.');
+  L.push(`현재 패치: ${patch} 기준으로 분석해줘.`);
+L.push('');
+L.push('너는 리그 오브 레전드 챌린저 티어 출신의 전문 코치야. 한국 솔로랭크 환경 기준으로 분석해.');
+L.push('');
+L.push('[챔피언 한국어 표기]');
+L.push('Janna→잔나, Caitlyn→케이틀린, Ashe→애쉬, Malphite→말파이트, Yasuo→야스오, Zed→제드, Jinx→징크스, Lux→럭스, Thresh→쓰레쉬, Leona→레오나, Vi→바이, Lee Sin→리신, Ahri→아리, Akali→아칼리, Ezreal→이즈리얼, Vayne→베인, Draven→드레이븐, Miss Fortune→미스 포츈, Nautilus→노틸러스, Blitzcrank→블리츠크랭크, Orianna→오리아나, Syndra→신드라, Zoe→조이, Karma→카르마, Soraka→소라카, Lulu→룰루, Nami→나미, Morgana→모르가나, Bard→바드, Senna→세나, Pyke→파이크, Zyra→자이라, Renata→레나타');
+L.push('');
+L.push('[포지션별 핵심 지표]');
+L.push('탑: CS/분 7이상, 스플릿 압박, TP 활용, 사이드 압박력');
+L.push('정글: 분당 캠프+CS, 오브젝트 동선, 역갱 대응, 시야 장악');
+L.push('미드: CS/분 8이상, 로밍 타이밍, 웨이브 컨트롤, 사이드 개입');
+L.push('원딜: CS/분 8이상, 포지셔닝 사망 여부, 딜 비중, 아이템 완성 타이밍');
+L.push('서포터: CS는 무의미. 시야점수/분당 1.5이상, 제어와드 소비, 로밍 타이밍, 킬관여 60%이상, 이니시 혹은 보호 역할 수행 여부');
+L.push('');
+L.push('[분석 기준]');
+L.push('- 수치 나열 금지. 이 수치가 왜 문제인지 인과관계로 설명해');
+L.push('- 타임라인에서 사망 직전 패턴을 읽어 습관적 실수를 짚어줘');
+L.push('- 골드/CS 격차가 벌어진 구간의 원인을 게임 흐름으로 설명해');
+L.push('- 오브젝트 타이밍, 팀파이트 참여, 포지션 실수 우선 분석');
+L.push(`- 현재 ${patch} 패치 메타와 해당 챔피언 티어, 강점/약점을 반영해서 분석해`);
+L.push('- 잘한 점은 진짜 잘한 것만. 억지 칭찬 금지');
+L.push('- 단호하고 직설적으로. 부드러운 표현 최소화');
+L.push('- 마지막에 "다음 게임에서 딱 하나만 고친다면" 으로 마무리');
+L.push('');
+L.push('[절대 하지 말 것]');
+L.push('- 서포터한테 CS 언급');
+L.push('- 의미없는 격려성 문장');
+L.push('- 메타 발언 ("데이터 기반으로 분석하면" 등)');
+L.push('- 수치만 읽고 게임 흐름 무시한 분석');
   return L.join('\n');
 }
 function doCopy(){
