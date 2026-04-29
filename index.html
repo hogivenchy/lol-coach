@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoL Coach</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;font-weight:300;background:#0A0A0F;color:#C8C8D8;min-height:100vh}
+body::before{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(200,155,60,0.04) 0%,transparent 70%);pointer-events:none}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px 60px;position:relative}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;color:#C89B3C;border-bottom:1px solid #2A2A40;padding-bottom:16px;margin-bottom:24px;padding-top:36px}
+.logo small{display:block;font-family:'Noto Sans KR',sans-serif;font-size:10px;letter-spacing:3px;color:#666688;font-weight:300;margin-top:4px}
+.slabel{font-size:10px;letter-spacing:2px;color:#785A28;margin-bottom:8px;font-weight:500}
+.panel{background:#1A1A26;border:1px solid #2A2A40;border-radius:6px;padding:16px;margin-bottom:14px;transition:border-color .2s}
+.panel.saved{border-color:#785A28}
+.row{display:flex;gap:8px;align-items:center}
+input{background:#0F0F18;border:1px solid #2A2A40;border-radius:4px;padding:10px 14px;color:#C8C8D8;font-family:'Noto Sans KR',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+input:focus{border-color:#785A28}
+input::placeholder{color:#666688}
+.nick{flex:1}.tag{width:85px}
+.hint{font-size:11px;color:#666688;margin-top:7px}
+.hint.ok{color:#4FC3A1}
+button{background:transparent;border:1px solid #2A2A40;color:#C8C8D8;padding:9px 16px;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border-radius:4px;transition:all .15s;white-space:nowrap}
+button:hover{background:#1A1A26}
+button:active{transform:scale(0.98)}
+button:disabled{opacity:.3;cursor:not-allowed}
+.btn-main{background:#785A28;border-color:#C89B3C;color:#F0E6C0;padding:10px 22px}
+.btn-main:hover{background:#C89B3C;color:#1a1208}
+.err{background:rgba(224,96,96,.1);border:1px solid rgba(224,96,96,.3);border-radius:4px;padding:10px 14px;font-size:12px;color:#E06060;margin-bottom:12px;display:none}
+.err.on{display:block}
+.match-item{background:#1A1A26;border:1px solid #2A2A40;border-left:3px solid transparent;border-radius:4px;padding:12px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.match-item:hover{border-color:#785A28;background:#202030}
+.match-item.sel{border-color:#C89B3C;background:#202030}
+.match-item.win{border-left-color:#4FC3A1}
+.match-item.loss{border-left-color:#E06060}
+.mres{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;min-width:36px}
+.mres.win{color:#4FC3A1}.mres.loss{color:#E06060}
+.mchamp{font-size:13px;font-weight:500;color:#F0E6C0;min-width:100px}
+.mkda{font-size:12px;color:#C8C8D8;min-width:75px}
+.mcs{font-size:11px;color:#666688;min-width:70px}
+.mtime{font-size:11px;color:#666688;margin-left:auto;text-align:right}
+.spin-wrap{text-align:center;padding:32px;color:#666688;font-size:12px;letter-spacing:1px}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid #2A2A40;border-top-color:#C89B3C;border-radius:50%;animation:spin .7s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result{background:#1A1A26;border:1px solid #2A2A40;border-radius:6px;padding:20px;display:none;margin-top:4px}
+.result.on{display:block}
+.rhead{display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid #2A2A40;margin-bottom:18px}
+.rchamp{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#F0E6C0}
+.rout{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px}
+.rout.win{color:#4FC3A1}.rout.loss{color:#E06060}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.sbox{background:#0F0F18;border:1px solid #2A2A40;border-radius:4px;padding:11px;text-align:center}
+.slb{font-size:9px;letter-spacing:2px;color:#666688;text-transform:uppercase;margin-bottom:5px}
+.sval{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:#C89B3C}
+.ssub{font-size:10px;color:#666688;margin-top:2px}
+.tl-row{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px}
+.tl-min{color:#785A28;min-width:28px;font-family:'Bebas Neue',sans-serif;font-size:13px}
+.tl-cs{color:#C8C8D8;min-width:95px}
+.tl-gd{color:#C89B3C;min-width:110px}
+.pos{color:#4FC3A1}.neg{color:#E06060}
+.ev-row{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px}
+.ev-t{color:#785A28;min-width:42px;font-family:'Bebas Neue',sans-serif;font-size:12px}
+.badge{font-size:9px;letter-spacing:.5px;padding:2px 6px;border-radius:3px;font-weight:500;min-width:42px;text-align:center}
+.badge.kill{background:rgba(224,96,96,.15);color:#E06060}
+.badge.assist{background:rgba(91,155,213,.15);color:#5B9BD5}
+.badge.death{background:rgba(102,102,136,.15);color:#666688}
+.badge.obj{background:rgba(200,155,60,.15);color:#C89B3C}
+.ev-d{color:#C8C8D8;line-height:1.5}
+.itag{background:#0F0F18;border:1px solid #2A2A40;border-radius:3px;padding:4px 9px;font-size:11px;color:#C8C8D8}
+.divider{height:1px;background:#2A2A40;margin:16px 0}
+.preview{background:#0F0F18;border:1px solid #2A2A40;border-radius:4px;padding:13px;font-size:10px;line-height:1.7;color:#666688;white-space:pre-wrap;max-height:160px;overflow-y:auto;font-family:monospace;margin-top:10px}
+.btn-copy{width:100%;margin-top:12px;background:#4FC3A1;border:none;color:#0A0A0F;padding:12px;font-size:13px;letter-spacing:2px;font-weight:700;border-radius:4px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s}
+.btn-copy:hover{background:#5fd4b0}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:#4FC3A1;color:#0A0A0F;padding:10px 24px;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:1px;opacity:0;transition:all .25s;pointer-events:none;z-index:99}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+section{margin-bottom:16px}
+@media(max-width:480px){.sgrid{grid-template-columns:repeat(2,1fr)}.mcs{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="logo">LOL COACH<small>MATCH ANALYSIS TOOL</small></div>
+
+<div class="slabel">RIOT API KEY</div>
+<div class="panel" id="apiPanel">
+  <div class="row">
+    <input type="password" id="apiKey" placeholder="RGAPI-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="flex:1">
+    <button onclick="saveKey()">저장</button>
+  </div>
+  <div class="hint" id="apiHint">API 키를 입력 후 저장 (24시간마다 재발급 필요)</div>
+</div>
+
+<div class="slabel">소환사 검색</div>
+<div class="panel">
+  <div class="row">
+    <input type="text" class="nick" id="nick" placeholder="경직된사고 남탓">
+    <input type="text" class="tag" id="tag" placeholder="KR1" value="KR1" maxlength="8">
+    <button class="btn-main" id="searchBtn" onclick="search()">분석</button>
+  </div>
+</div>
+
+<div class="err" id="err"></div>
+<div id="matchSec" style="display:none">
+  <div class="slabel">최근 게임</div>
+  <div id="matchList"></div>
+</div>
+<div class="result" id="result"></div>
+</div>
+<div class="toast" id="toast">클립보드에 복사됐어요!</div>
+
+<script>
+const RG='asia';
+let key='',copyData=null;
+window.onload=()=>{
+  const k=localStorage.getItem('lc_key');
+  if(k){key=k;document.getElementById('apiKey').value=k;setKeyOk(true)}
+  const n=localStorage.getItem('lc_nick'),t=localStorage.getItem('lc_tag');
+  if(n)document.getElementById('nick').value=n;
+  if(t)document.getElementById('tag').value=t;
+  document.getElementById('nick').onkeydown=e=>{if(e.key==='Enter')search()};
+};
+function saveKey(){
+  const v=document.getElementById('apiKey').value.trim();
+  if(!v.startsWith('RGAPI-')){showErr('올바른 키 형식이 아니에요. RGAPI-로 시작해야 해요.');return}
+  key=v;localStorage.setItem('lc_key',v);setKeyOk(true);hideErr();
+}
+function setKeyOk(ok){
+  const h=document.getElementById('apiHint'),p=document.getElementById('apiPanel');
+  if(ok){h.textContent='✓ 저장됨 (24시간마다 재발급 필요)';h.className='hint ok';p.classList.add('saved')}
+  else{h.textContent='API 키를 입력 후 저장';h.className='hint';p.classList.remove('saved')}
+}
+function showErr(m){const e=document.getElementById('err');e.textContent=m;e.className='err on'}
+function hideErr(){document.getElementById('err').className='err'}
+async function rf(url){
+  const r=await fetch(url+(url.includes('?')?'&':'?')+'api_key='+key);
+  if(!r.ok){
+    if(r.status===401)throw new Error('API 키가 만료됐어요. developer.riotgames.com에서 재발급 후 저장해주세요.');
+    if(r.status===404)throw new Error('소환사를 찾을 수 없어요. 닉네임과 태그를 확인해주세요.');
+    if(r.status===429)throw new Error('요청이 너무 많아요. 잠시 후 다시 시도해주세요.');
+    throw new Error('오류 ('+r.status+')');
+  }
+  return r.json();
+}
+async function search(){
+  if(!key){showErr('API 키를 먼저 저장해주세요.');return}
+  const n=document.getElementById('nick').value.trim(),t=document.getElementById('tag').value.trim().replace('#','');
+  if(!n||!t){showErr('닉네임과 태그를 입력해주세요.');return}
+  localStorage.setItem('lc_nick',n);localStorage.setItem('lc_tag',t);
+  hideErr();
+  document.getElementById('matchSec').style.display='none';
+  document.getElementById('result').className='result';
+  const btn=document.getElementById('searchBtn');
+  btn.disabled=true;btn.textContent='로딩중...';
+  document.getElementById('matchList').innerHTML='<div class="spin-wrap"><div class="spinner"></div><br>데이터 불러오는 중...</div>';
+  document.getElementById('matchSec').style.display='block';
+  try{
+    const acc=await rf(`https://${RG}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(n)}/${encodeURIComponent(t)}`);
+    const ids=await rf(`https://${RG}.api.riotgames.com/lol/match/v5/matches/by-puuid/${acc.puuid}/ids?queue=420&count=10`);
+    if(!ids.length){document.getElementById('matchList').innerHTML='<div class="spin-wrap">최근 솔로랭크 게임이 없어요.</div>';return}
+    const ms=await Promise.all(ids.map(id=>rf(`https://${RG}.api.riotgames.com/lol/match/v5/matches/${id}`)));
+    renderList(ms,acc.puuid);
+  }catch(e){showErr(e.message);document.getElementById('matchSec').style.display='none'}
+  finally{btn.disabled=false;btn.textContent='분석'}
+}
+function renderList(ms,puuid){
+  const el=document.getElementById('matchList');el.innerHTML='';
+  ms.forEach(m=>{
+    const me=m.info.participants.find(p=>p.puuid===puuid);if(!me)return;
+    const win=me.win,dur=Math.floor(m.info.gameDuration/60);
+    const cpm=((me.totalMinionsKilled+me.neutralMinionsKilled)/(m.info.gameDuration/60)).toFixed(1);
+    const d=document.createElement('div');
+    d.className=`match-item ${win?'win':'loss'}`;
+    d.innerHTML=`<div class="mres ${win?'win':'loss'}">${win?'WIN':'LOSS'}</div><div class="mchamp">${me.championName}</div><div class="mkda">${me.kills}/${me.deaths}/${me.assists}</div><div class="mcs">${me.totalMinionsKilled+me.neutralMinionsKilled}CS <span style="font-size:10px">${cpm}/분</span></div><div class="mtime">${ago(m.info.gameEndTimestamp)}<br>${dur}분</div>`;
+    d.onclick=()=>loadDetail(m.metadata.matchId,puuid,d);
+    el.appendChild(d);
+  });
+}
+async function loadDetail(id,puuid,el){
+  document.querySelectorAll('.match-item').forEach(i=>i.classList.remove('sel'));
+  el.classList.add('sel');
+  const r=document.getElementById('result');
+  r.className='result on';
+  r.innerHTML='<div class="spin-wrap"><div class="spinner"></div><br>타임라인 분석 중...</div>';
+  try{
+    const[m,tl]=await Promise.all([rf(`https://${RG}.api.riotgames.com/lol/match/v5/matches/${id}`),rf(`https://${RG}.api.riotgames.com/lol/match/v5/matches/${id}/timeline`)]);
+    renderResult(m,tl,puuid);
+  }catch(e){r.innerHTML=`<div style="color:#E06060;padding:16px;font-size:12px">${e.message}</div>`}
+}
+function renderResult(m,tl,puuid){
+  const me=m.info.participants.find(p=>p.puuid===puuid);
+  const pid=me.participantId,win=me.win,myTeam=me.teamId;
+  const dur=Math.floor(m.info.gameDuration/60);
+  const cs=me.totalMinionsKilled+me.neutralMinionsKilled;
+  const cpm=(cs/(m.info.gameDuration/60)).toFixed(1);
+  const kda=me.deaths===0?'Perfect':((me.kills+me.assists)/me.deaths).toFixed(2);
+  const dpm=Math.round(me.totalDamageDealtToChampions/(m.info.gameDuration/60));
+  const opp=m.info.participants.find(p=>p.teamId!==myTeam&&p.individualPosition===me.individualPosition);
+  const snaps=[];
+  tl.info.frames.forEach(f=>{
+    const pf=f.participantFrames[pid];if(!pf)return;
+    const mn=Math.floor(f.timestamp/60000);
+    if([5,10,15,20,25].includes(mn)&&!snaps.find(s=>s.mn===mn)){
+      let oc=0,og=0;
+      if(opp){const op=f.participantFrames[opp.participantId];if(op){oc=op.minionsKilled+(op.jungleMinionsKilled||0);og=op.totalGold}}
+      snaps.push({mn,cs:pf.minionsKilled+(pf.jungleMinionsKilled||0),gd:pf.totalGold,oc,og});
+    }
+  });
+  const evs=[];
+  tl.info.frames.forEach(f=>{
+    f.events.forEach(ev=>{
+      const sc=Math.floor(ev.timestamp/1000),t=Math.floor(sc/60)+':'+(sc%60+'').padStart(2,'0');
+      if(ev.type==='CHAMPION_KILL'){
+        if(ev.killerId===pid)evs.push({t,type:'kill',d:'킬'});
+        else if(ev.victimId===pid)evs.push({t,type:'death',d:'사망'});
+        else if(ev.assistingParticipantIds?.includes(pid))evs.push({t,type:'assist',d:'어시스트'});
+      }else if(['DRAGON_KILL','BARON_KILL','RIFT_HERALD_KILL'].includes(ev.type)){
+        const nm={DRAGON_KILL:'드래곤',BARON_KILL:'바론',RIFT_HERALD_KILL:'리프트 전령'};
+        if(ev.killerTeamId===myTeam)evs.push({t,type:'obj',d:`아군 ${nm[ev.type]}`});
+      }
+    });
+  });
+  const items=[me.item0,me.item1,me.item2,me.item3,me.item4,me.item5].filter(i=>i>0).map(iname);
+  const mt=m.info.participants.filter(p=>p.teamId===myTeam);
+  const et=m.info.participants.filter(p=>p.teamId!==myTeam);
+  const txt=buildText(m,me,snaps,evs,items,mt,et,dur,cs,cpm,kda,dpm);
+  copyData=txt;
+  const r=document.getElementById('result');
+  r.innerHTML=`
+<div class="rhead">
+  <div><div class="rchamp">${me.championName}</div><div style="font-size:11px;color:#666688;margin-top:2px">${me.individualPosition} · ${dur}분</div></div>
+  <div class="rout ${win?'win':'loss'}">${win?'VICTORY':'DEFEAT'}</div>
+</div>
+<div class="sgrid">
+  <div class="sbox"><div class="slb">KDA</div><div class="sval">${me.kills}/${me.deaths}/${me.assists}</div><div class="ssub">${kda} 평점</div></div>
+  <div class="sbox"><div class="slb">CS</div><div class="sval">${cs}</div><div class="ssub">${cpm}/분</div></div>
+  <div class="sbox"><div class="slb">딜량</div><div class="sval">${(me.totalDamageDealtToChampions/1000).toFixed(1)}K</div><div class="ssub">${dpm}/분</div></div>
+  <div class="sbox"><div class="slb">시야점수</div><div class="sval">${me.visionScore}</div><div class="ssub">제어와드 ${me.visionWardsBoughtInGame}개</div></div>
+  <div class="sbox"><div class="slb">킬관여</div><div class="sval">${Math.round((me.challenges?.killParticipation||0)*100)}%</div><div class="ssub">팀 기여</div></div>
+  <div class="sbox"><div class="slb">골드</div><div class="sval">${(me.goldEarned/1000).toFixed(1)}K</div><div class="ssub">${Math.round(me.goldEarned/m.info.gameDuration*60)}/분</div></div>
+</div>
+${snaps.length?`<section><div class="slabel">타임라인</div>${snaps.map(s=>{const cd=s.cs-s.oc,gd=s.gd-s.og;return`<div class="tl-row"><div class="tl-min">${s.mn}분</div><div class="tl-cs">CS ${s.cs} <span class="${cd>=0?'pos':'neg'}">(${cd>=0?'+':''}${cd})</span></div><div class="tl-gd">골드 ${(s.gd/1000).toFixed(1)}K <span class="${gd>=0?'pos':'neg'}">(${gd>=0?'+':''}${(gd/1000).toFixed(1)}K)</span></div></div>`}).join('')}</section>`:''}
+${evs.length?`<section><div class="slabel">주요 이벤트</div>${evs.slice(0,20).map(e=>`<div class="ev-row"><div class="ev-t">${e.t}</div><div class="badge ${e.type}">${e.type==='kill'?'킬':e.type==='death'?'사망':e.type==='assist'?'어시':e.type==='obj'?'오브젝트':e.type}</div><div class="ev-d">${e.d}</div></div>`).join('')}</section>`:''}
+${items.length?`<section><div class="slabel">최종 아이템</div><div style="display:flex;flex-wrap:wrap;gap:5px">${items.map(n=>`<div class="itag">${n}</div>`).join('')}</div></section>`:''}
+<div class="divider"></div>
+<div class="slabel">CLAUDE 코칭용 데이터 미리보기</div>
+<div class="preview">${esc(txt.substring(0,500))}...</div>
+<button class="btn-copy" onclick="doCopy()">📋 CLAUDE에 붙여넣기용 복사</button>`;
+}
+function buildText(m,me,snaps,evs,items,mt,et,dur,cs,cpm,kda,dpm){
+  const patch=m.info.gameVersion.split('.').slice(0,2).join('.');
+  const L=[];
+  L.push('=== LoL 게임 분석 데이터 ===');
+  L.push(`패치: ${patch} | 솔로랭크 | ${dur}분 | ${me.win?'승리':'패배'}`);
+  L.push('');L.push('--- 내 정보 ---');
+  L.push(`챔피언: ${me.championName} | 포지션: ${me.individualPosition}`);
+  L.push(`KDA: ${me.kills}/${me.deaths}/${me.assists} (${kda} 평점)`);
+  L.push(`CS: ${cs} (${cpm}/분) | 딜량: ${me.totalDamageDealtToChampions.toLocaleString()} (${dpm}/분)`);
+  L.push(`골드: ${me.goldEarned.toLocaleString()} | 시야점수: ${me.visionScore} | 제어와드: ${me.visionWardsBoughtInGame}개`);
+  L.push(`킬관여: ${Math.round((me.challenges?.killParticipation||0)*100)}%`);
+  L.push('');L.push('--- 최종 아이템 ---');
+  L.push(items.join(' → '));
+  L.push('');
+  if(snaps.length){
+    L.push('--- 타임라인 ---');
+    snaps.forEach(s=>{const cd=s.cs-s.oc,gd=s.gd-s.og;L.push(`${s.mn}분: 내CS ${s.cs} vs 상대CS ${s.oc} (${cd>=0?'+':''}${cd}) | 내골드 ${s.gd.toLocaleString()} vs 상대골드 ${s.og.toLocaleString()} (${gd>=0?'+':''}${gd.toLocaleString()})`)});
+    L.push('');
+  }
+  if(evs.length){
+    L.push('--- 주요 이벤트 ---');
+    evs.forEach(e=>L.push(`[${e.t}] ${e.type==='kill'?'킬':e.type==='death'?'사망':e.type==='assist'?'어시스트':'오브젝트'} - ${e.d}`));
+    L.push('');
+  }
+  L.push('--- 우리팀 ---');
+  mt.forEach(p=>L.push(`${p.championName} (${p.individualPosition}): ${p.kills}/${p.deaths}/${p.assists} CS${p.totalMinionsKilled+p.neutralMinionsKilled}`));
+  L.push('');L.push('--- 상대팀 ---');
+  et.forEach(p=>L.push(`${p.championName} (${p.individualPosition}): ${p.kills}/${p.deaths}/${p.assists} CS${p.totalMinionsKilled+p.neutralMinionsKilled}`));
+  L.push('');L.push('---');
+  L.push('위 데이터를 바탕으로 프로 코치 관점에서 이번 게임을 분석해줘.');
+  L.push('잘한 점, 고쳐야 할 점, 다음 게임에서 집중할 것 순서로 피드백해줘.');
+  L.push('타임라인의 CS/골드 흐름과 이벤트 패턴을 중심으로 구체적으로 분석해줘.');
+  return L.join('\n');
+}
+function doCopy(){
+  if(!copyData)return;
+  navigator.clipboard.writeText(copyData).then(showToast).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=copyData;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast();
+  });
+}
+function showToast(){const t=document.getElementById('toast');t.className='toast on';setTimeout(()=>t.className='toast',2500)}
+function ago(ts){const d=Date.now()-ts,mn=Math.floor(d/60000);if(mn<60)return mn+'분 전';const h=Math.floor(mn/60);if(h<24)return h+'시간 전';return Math.floor(h/24)+'일 전'}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function iname(id){const m={3153:'피의 맹세',3031:'무한의 대검',3046:'유령 춤',3036:'모탈 리마인더',3033:'상처 베기',3072:'핏빛 칼날',3074:'광전사의 전동 검',3075:'가시 갑옷',3143:'랜드윈의 조짐',3083:'온기의 성배',3085:'루난의 허리케인',3089:'라바돈의 죽음 모자',3100:'리치베인',3102:'반다미어의 면사포',3107:'구원',3109:'기사의 서약',3110:'프로즌 하트',3111:'수은 발목 보호대',3115:'나쉬어의 이빨',3116:'리안드리의 고통',3119:'겨울의 접근',3135:'공허 지팡이',3139:'수은 사슬',3142:'요우무의 유령 검',3147:'야행성 사냥꾼',3156:'말라모르티스',3157:'존야의 모래시계',3165:'모렐로노미콘',3190:'용사의 방패',3193:'가고일 석갑',6029:'그림자 검',6333:'피바람',6609:'피의 노래',6610:'심연의 가면',6620:'크라켄 학살자',6630:'임모탈 쉴드보우',6631:'스토름레이저',6632:'런 블레이드',6653:'리안드리의 고통',6655:'루덴의 동반자',6656:'아리아 선물',6660:'포식자의 탈론',6664:'철옹성',6671:'크리스탈의 의지',6672:'불사의 칼날',3001:'어비살 마스크',3003:'아르캔젤의 지팡이',3026:'수호 천사',3027:'로드의 애도',3032:'티아매트',3042:'무라마나',3053:'스테락의 소망',3065:'스피릿 비사지',3068:'선파이어 이지스',3071:'블랙 클리버',3091:'위트의 종말',3006:'광전사의 군화',3009:'요속의 부츠',3020:'마법사의 신발',3047:'판금 갑옷',3117:'이동 속도의 부츠',3158:'아이오니아의 인내',4005:'임페리얼 맨데이트',4401:'힘의 책',4628:'지평선의 초점',4633:'시퀀스 마법진',4636:'고통의 선물'};return m[id]||'아이템#'+id}
+</script>
+</body>
+</html>
